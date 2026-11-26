@@ -32,7 +32,7 @@ This repository hosts a **100% Non-Contact, Dual-Layer Sensing & Edge-AI Monitor
 An interactive, non-contact industrial digital-twin and telemetry simulation designed for **High-Speed Cold Rolling Mills (up to 1200 m/min)** to detect residual rolling emulsion carryover before it impacts downstream coating and finishing lines.
 
 ## Live Demo
-- **Interactive Simulation:** https://github.io
+- **Interactive Simulation:** https://github.io([https://bhuyanamitnishanka-debug.github.io/CRM-Coolant-Carryover-Detection-Simulator](https://bhuyanamitnishanka-debug.github.io/CRM-Coolant-Carryover-Detection-Simulator/)
 
 ## Core Technical Architecture
 1. **SWIR Line-Scan Optical Bridge (`1450 nm` / `1940 nm`):** Penetrates mill vapor/mist and eliminates motion blur at 1200 m/min.
