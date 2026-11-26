@@ -5,7 +5,14 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1];
+  const pagesBase =
+    process.env.GITHUB_ACTIONS === 'true' && repositoryName
+      ? `/${repositoryName}/`
+      : '/';
+
   return {
+    base: pagesBase,
     plugins: [
       react(),
       tailwindcss(),
@@ -31,6 +38,14 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
+      },
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          simulator: path.resolve(__dirname, 'simulator.html'),
+        },
       },
     },
     server: {

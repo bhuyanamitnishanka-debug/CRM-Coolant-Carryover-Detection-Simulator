@@ -1,33 +1,330 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CRM Coolant Carryover Detection Simulator (SWIR + Capacitive Edge-AI)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090d12" />
     <meta
       name="description"
-      content="Non-Contact Dual-Sensor (SWIR Optical + Capacitive Fringe-Field) & Edge-AI Real-Time Coolant Carryover Detection Simulator for High-Speed Cold Rolling Mills."
+      content="An independent Tata InnoVerse-context concept demo: model seven-zone SWIR and capacitive coolant carryover telemetry in a browser. Not affiliated with or endorsed by Tata."
     />
-    <meta
-      property="og:title"
-      content="CRM Coolant Carryover Detection Simulator (SWIR + Capacitive Edge-AI)"
-    />
+    <meta property="og:title" content="CRM Coolant Carryover Detection Simulator" />
     <meta
       property="og:description"
-      content="Non-Contact Dual-Sensor (SWIR Optical + Capacitive Fringe-Field) & Edge-AI Real-Time Coolant Carryover Detection Simulator for High-Speed Cold Rolling Mills."
+      content="An independent Tata InnoVerse-context concept demo with locally modeled dual-sensor telemetry; no mill hardware is connected."
     />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <title>CRM Coolant Carryover Detection Simulator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "DM Sans", sans-serif;
+        background: #090d12;
+        color: #edf2f2;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --muted: #9aa8ad;
+        --line: #273139;
+        --mint: #a4f3d0;
+        --mono: "DM Mono", monospace;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; min-width: 320px; }
+      a { color: inherit; text-decoration: none; }
+      .shell { width: min(1160px, calc(100% - 48px)); margin: 0 auto; }
+
+      .topbar {
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(167, 187, 190, .12);
+      }
+      .brand { display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; letter-spacing: .01em; }
+      .brand-mark {
+        width: 34px; height: 34px; display: grid; place-items: center;
+        color: var(--mint); border: 1px solid rgba(164, 243, 208, .4);
+        border-radius: 10px; background: rgba(164, 243, 208, .08);
+      }
+      .brand-mark svg { width: 19px; height: 19px; }
+      .nav { display: flex; align-items: center; gap: 32px; color: #b7c1c3; font-size: 13px; }
+      .nav a:hover { color: white; }
+      .nav .nav-cta { padding: 10px 15px; color: #09120f; font-weight: 700; background: var(--mint); border-radius: 7px; }
+      .nav .nav-cta:hover { background: #c1f8df; color: #09120f; }
+
+      .hero {
+        display: grid; grid-template-columns: .92fr 1.08fr; align-items: center;
+        gap: 54px; padding: 78px 0 70px;
+      }
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 9px;
+        color: var(--mint); font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+      }
+      .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 14px rgba(164, 243, 208, .7); }
+      h1 { margin: 20px 0 19px; max-width: 570px; font-size: clamp(42px, 5vw, 65px); line-height: 1.04; letter-spacing: -.055em; font-weight: 600; }
+      h1 span { color: var(--mint); }
+      .hero-copy { max-width: 500px; color: #aab6b9; font-size: 16px; line-height: 1.75; }
+      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 30px; }
+      .button {
+        display: inline-flex; min-height: 46px; align-items: center; justify-content: center;
+        gap: 10px; padding: 0 17px; border: 1px solid transparent; border-radius: 7px;
+        font-size: 13px; font-weight: 700; transition: .18s ease;
+      }
+      .button-primary { background: var(--mint); color: #0a1511; }
+      .button-primary:hover { background: #c1f8df; transform: translateY(-1px); }
+      .button-secondary { border-color: #39464d; color: #e2e8e8; }
+      .button-secondary:hover { border-color: #73878a; background: rgba(255,255,255,.03); }
+      .button svg { width: 15px; height: 15px; }
+      .hero-note { margin-top: 21px; color: #75848a; font: 10px var(--mono); letter-spacing: .04em; }
+
+      .visual {
+        position: relative; overflow: hidden; min-height: 390px; border: 1px solid #354248;
+        border-radius: 13px; background: #121b20; box-shadow: 0 30px 90px rgba(0,0,0,.32);
+      }
+      .visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .8; }
+      .visual::after { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, rgba(7,12,15,.02) 35%, rgba(7,12,15,.82) 100%); pointer-events: none; }
+      .visual-topline { position: absolute; top: 16px; left: 17px; right: 17px; z-index: 1; display: flex; justify-content: space-between; gap: 12px; }
+      .tag { padding: 7px 9px; border: 1px solid rgba(193,218,216,.22); border-radius: 5px; background: rgba(9,15,18,.75); color: #d3dddc; font: 9px var(--mono); letter-spacing: .05em; backdrop-filter: blur(8px); }
+      .live { display: inline-flex; align-items: center; gap: 7px; }
+      .live i { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+      .visual-caption { position: absolute; z-index: 1; left: 21px; right: 21px; bottom: 20px; display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+      .visual-caption strong { display: block; font-size: 15px; }
+      .visual-caption span { display: block; margin-top: 5px; color: #b6c3c2; font: 9px var(--mono); }
+      .readout { text-align: right; color: var(--mint); font: 11px var(--mono); white-space: nowrap; }
+
+      .metrics {
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      }
+      .metric { padding: 24px 24px 25px; border-right: 1px solid var(--line); }
+      .metric:first-child { padding-left: 0; }
+      .metric:last-child { border-right: 0; }
+      .metric strong { display: block; color: var(--mint); font: 24px var(--mono); letter-spacing: -.06em; }
+      .metric span { display: block; margin-top: 8px; color: #8d9b9f; font-size: 11px; }
+
+      section.content { padding: 88px 0; }
+      .section-head { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 30px; }
+      .section-label { color: var(--mint); font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+      h2 { margin: 12px 0 0; font-size: clamp(29px, 3.2vw, 40px); line-height: 1.15; letter-spacing: -.045em; font-weight: 600; }
+      .section-intro { max-width: 360px; margin: 0 0 2px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+      .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .step { min-height: 188px; padding: 20px; border: 1px solid var(--line); border-radius: 9px; background: #0e1419; }
+      .step-number { color: #8da49f; font: 10px var(--mono); }
+      .step-icon { display: grid; place-items: center; width: 38px; height: 38px; margin: 18px 0 15px; border: 1px solid rgba(164,243,208,.18); border-radius: 9px; color: var(--mint); background: rgba(164,243,208,.06); }
+      .step-icon svg { width: 18px; height: 18px; }
+      .step h3 { margin: 0; font-size: 13px; line-height: 1.45; }
+      .step p { margin: 8px 0 0; color: #8d9b9f; font-size: 11px; line-height: 1.6; }
+
+      .detail {
+        display: grid; grid-template-columns: .95fr 1.05fr; gap: 52px; align-items: center;
+        padding: 30px; border: 1px solid var(--line); border-radius: 12px; background: #0d1418;
+      }
+      .detail h2 { max-width: 410px; }
+      .detail p { max-width: 430px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+      .spec-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .spec { padding: 17px; border: 1px solid #29363b; border-radius: 8px; background: #10191d; }
+      .spec strong { display: block; color: var(--mint); font: 17px var(--mono); }
+      .spec span { display: block; margin-top: 7px; color: #94a2a4; font-size: 10px; line-height: 1.5; }
+
+      .closing {
+        display: flex; justify-content: space-between; align-items: center; gap: 24px;
+        margin: 0 0 70px; padding: 30px 34px; border: 1px solid rgba(164,243,208,.22);
+        border-radius: 11px; background: radial-gradient(ellipse at 15% 50%, rgba(70,148,118,.12), transparent 55%), #0e1618;
+      }
+      .closing h2 { margin: 0; font-size: 23px; }
+      .closing p { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+      footer { padding: 23px 0 28px; border-top: 1px solid var(--line); color: #76858a; font-size: 10px; }
+      .footer-inner { display: flex; justify-content: space-between; gap: 20px; }
+      .footer-note { font-family: var(--mono); }
+      .footer-readme { color: var(--mint); font-weight: 600; }
+      .footer-readme:hover { color: #c1f8df; }
+
+      @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr 1fr; gap: 30px; padding-top: 60px; }
+        .visual { min-height: 340px; }
+        .steps { grid-template-columns: repeat(2, 1fr); }
+        .detail { gap: 28px; }
+      }
+      @media (max-width: 640px) {
+        .shell { width: min(100% - 36px, 520px); }
+        .topbar { height: 66px; }
+        .brand { font-size: 11px; }
+        .nav { gap: 14px; font-size: 11px; }
+        .nav a:not(.nav-cta) { display: none; }
+        .nav .nav-cta { padding: 9px 11px; }
+        .hero { grid-template-columns: 1fr; gap: 32px; padding: 53px 0 42px; }
+        h1 { max-width: 470px; font-size: clamp(43px, 12vw, 59px); }
+        .hero-copy { font-size: 14px; }
+        .visual { min-height: 290px; }
+        .metrics { grid-template-columns: repeat(2, 1fr); }
+        .metric { padding: 18px 12px; border-bottom: 1px solid var(--line); }
+        .metric:first-child { padding-left: 12px; }
+        .metric:nth-child(2) { border-right: 0; }
+        .metric:nth-child(3), .metric:nth-child(4) { border-bottom: 0; }
+        .metric strong { font-size: 21px; }
+        section.content { padding: 64px 0; }
+        .section-head { display: block; }
+        .section-intro { margin-top: 14px; }
+        .steps { gap: 9px; }
+        .step { min-height: 180px; padding: 15px; }
+        .detail { grid-template-columns: 1fr; gap: 22px; padding: 21px; }
+        .closing { align-items: start; flex-direction: column; margin-bottom: 48px; padding: 24px; }
+        .footer-inner { flex-direction: column; gap: 8px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { transition-duration: .01ms !important; }
+      }
+    </style>
   </head>
-  <body class="bg-[#07090E] text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-100">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body>
+    <header class="shell topbar">
+      <a class="brand" href="#" aria-label="Coolant Carryover Simulator home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 17.5 9.2 6l3.1 7 2-4 5.7 8.5H4Z"/><path d="M3 20h18"/></svg>
+        </span>
+        <span>CRM COOLANT MONITOR</span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#approach">Approach</a>
+        <a href="#system">System</a>
+        <a class="nav-cta" href="simulator.html">Open simulator <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="shell hero">
+        <div>
+          <div class="eyebrow"><span class="pulse"></span> Tata InnoVerse · independent concept demo</div>
+          <h1>See what the air knife <span>leaves behind.</span></h1>
+          <p class="hero-copy">
+            Explore a browser-based concept model for coolant carryover on high-speed cold-rolling
+            lines. Adjust process conditions and see illustrative seven-zone SWIR and capacitive
+            telemetry respond—without connecting to mill equipment.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="simulator.html">
+              Launch the simulator
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10h12M10 4l6 6-6 6"/></svg>
+            </a>
+            <a class="button button-secondary" href="#approach">Explore the approach</a>
+          </div>
+          <p class="hero-note">LOCAL SIMULATION · NO MILL CONNECTION</p>
+          <p class="hero-note">Independent Tata InnoVerse-context concept; not an official Tata product or endorsement.</p>
+        </div>
+
+        <div class="visual" role="img" aria-label="Concept rendering of a dual-sensor coolant detection system above a rolling mill passline">
+          <img src="assets/aistudio/image_45df4afa.png" alt="" fetchpriority="high" />
+          <div class="visual-topline">
+            <span class="tag">PASSLINE / SENSOR BRIDGE</span>
+            <span class="tag live"><i></i> CONCEPT MODEL</span>
+          </div>
+          <div class="visual-caption">
+            <div>
+              <strong>Dual-sensor process monitoring</strong>
+              <span>MODELED SWIR + CAPACITIVE SIGNALS</span>
+            </div>
+            <div class="readout">7 ZONES<br />EDGE-AI</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shell metrics" aria-label="System highlights">
+        <div class="metric"><strong>1450 / 1940</strong><span>SWIR water absorption bands · nm</span></div>
+        <div class="metric"><strong>&lt; 5 ms</strong><span>Illustrative modeled inference latency</span></div>
+        <div class="metric"><strong>7 zones</strong><span>Across-strip sensing and air-knife control</span></div>
+        <div class="metric"><strong>12–15 mm</strong><span>Capacitive sensor stand-off</span></div>
+      </div>
+
+      <section class="shell content" id="approach">
+        <div class="section-head">
+          <div>
+            <div class="section-label">01 / Detection path</div>
+            <h2>From wet strip to timely response.</h2>
+          </div>
+          <p class="section-intro">
+            A concept simulation for exploring thin-film detection challenges in steam, glare, and
+            high-speed motion.
+          </p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <span class="step-number">01 — SENSE</span>
+            <div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h16M4 12h16M4 16h16"/><path d="M8 5v14m8-14v14"/></svg></div>
+            <h3>Model non-contact sensing</h3>
+            <p>Explore illustrative SWIR and capacitive signals across seven passline zones.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">02 — FUSE</span>
+            <div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4M12 9v6"/></svg></div>
+            <h3>Combine complementary signals</h3>
+            <p>Modeled optical absorption and dielectric shift show complementary sensor responses.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">03 — LOCATE</span>
+            <div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg></div>
+            <h3>Map carryover by zone</h3>
+            <p>Follow severity and coil meter-mark telemetry as the simulated strip advances.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">04 — RESPOND</span>
+            <div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14h4l2-7 4 11 2-7h4"/><path d="M4 4h16v16H4z"/></svg></div>
+            <h3>Test modeled responses</h3>
+            <p>Adjust air-knife and process settings, then observe their simulated effects.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="shell content" id="system">
+        <div class="detail">
+          <div>
+            <div class="section-label">02 / System concept</div>
+            <h2>Built for a difficult place to measure.</h2>
+            <p>
+              Cold rolling lines combine reflective steel, mist, vibration, and demanding strip
+              speeds. This browser simulation explores a proposed non-contact sensing architecture
+              and feedback loop for identifying carryover before it travels downstream.
+            </p>
+            <p>
+              Change simulated operating conditions, inspect the conceptual sensor bridge, and
+              review the proposal. Telemetry is modeled locally; no mill sensors or control systems
+              are connected.
+            </p>
+          </div>
+          <div class="spec-list" aria-label="Concept specifications">
+            <div class="spec"><strong>SWIR</strong><span>Water-sensitive optical bands at 1450 and 1940 nm</span></div>
+            <div class="spec"><strong>Dual</strong><span>Optical and capacitive measurements complement one another</span></div>
+            <div class="spec"><strong>Edge-AI</strong><span>Designed for low-latency signal fusion near the process</span></div>
+            <div class="spec"><strong>Closed loop</strong><span>Zone-level air-knife response and coil event logging</span></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="shell closing">
+        <div>
+          <h2>Take the controls.</h2>
+          <p>Run the simulator and explore live telemetry, sensing zones, and process settings.</p>
+        </div>
+        <a class="button button-primary" href="simulator.html">
+          Open interactive simulator
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10h12M10 4l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </main>
+    <footer>
+      <div class="shell footer-inner">
+        <span>CRM Coolant Carryover Detection Simulator</span>
+        <span class="footer-note">INDEPENDENT TATA INNOVERSE-CONTEXT CONCEPT · NOT TATA-ENDORSED · NOT A CERTIFIED CONTROL SYSTEM</span>
+        <a class="footer-readme" href="https://github.com/bhuyanamitnishanka-debug/CRM-Coolant-Carryover-Detection-Simulator#readme" target="_blank" rel="noopener noreferrer">Project README ↗</a>
+      </div>
+    </footer>
   </body>
 </html>
-
