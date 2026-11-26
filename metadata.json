@@ -1,0 +1,6 @@
+{
+  "name": "CRM Coolant Carryover Detection Simulator",
+  "description": "Non-Contact Dual-Sensor (SWIR Optical + Capacitive Fringe-Field) & Edge-AI Real-Time Coolant Carryover Detection Simulator for High-Speed Cold Rolling Mills.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
