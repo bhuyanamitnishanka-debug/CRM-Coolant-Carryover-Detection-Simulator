@@ -31,7 +31,7 @@ export function Concept3DView() {
             {!imgFailed ? (
               <div className="relative aspect-video w-full">
                 <img
-                  src="/assets/aistudio/image_45df4afa.png"
+                  src={`${import.meta.env.BASE_URL}assets/aistudio/image_45df4afa.png`}
                   alt="3D conceptual engineering rendering of the Aero-Optic Closed-Loop Coolant Control bridge over a Cold Rolling Mill passline"
                   referrerPolicy="no-referrer"
                   onError={() => setImgFailed(true)}
